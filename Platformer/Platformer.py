@@ -3,14 +3,14 @@ import random
 
 pygame.init()
 win = pygame.display.set_mode((500, 500)) # размеры X и Y
-pygame.display.set_caption("Название игры")
+pygame.display.set_caption("Rplatformer")
 
 while(True):
 	pass
 
 pygame.init()
 win = pygame.display.set_mode((500, 500)) # размеры X и Y
-pygame.display.set_caption("Название игры")
+pygame.display.set_caption("Rplatformer")
 
 run = True
 while(run):
