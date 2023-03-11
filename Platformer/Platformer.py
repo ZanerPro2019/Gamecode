@@ -4,12 +4,13 @@ pygame.init()
 win = pygame.display.set_mode((500, 500))
 pygame.display.set_caption('Платформер')
 
-player = pygame.image.load("idle.png")
-bg = pygame.image.load("bg.jpg")
+player = pygame.image.load('idle.png')
+bg = pygame.image.load('bg.jpg')
+platform = pygame.image.load('platform.png')
 
-x = 50
-y = 50
-speed = 5
+x = 400
+y = 400
+speed = 1
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self):

@@ -166,8 +166,7 @@ def main():
 	while not done:
 		# Отслеживание действий
 		for event in pygame.event.get():
-			if event.type == pygame.QUIT: # Если закрыл программу, то останавливаем цикл
-				done = True
+
 
 			# Если нажали на стрелки клавиатуры, то двигаем объект
 			if event.type == pygame.KEYDOWN:
