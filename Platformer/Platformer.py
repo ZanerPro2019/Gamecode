@@ -1,154 +1,120 @@
-import pygame
+import pygame, numpy
 
-pygame.init()
-win = pygame.display.set_mode((500, 500))
-pygame.display.set_caption('Платформер')
+WIDTH = 400
+HEIGHT = 300
+BACKGROUND = (0, 0, 0)
 
-player = pygame.image.load('idle.png')
-bg = pygame.image.load('bg.jpg')
-platform = pygame.image.load('platform.png')
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, image, startx, starty):
+        super().__init__()
 
-x = 400
-y = 400
-speed = 1
-
-class Player(pygame.sprite.Sprite):
-	def __init__(self):
-		super.__init__()
-		self.image = pygame.image.load('idle.png')
+		self.image = pygame.image.load(image)
 		self.rect = self.image.get_rect()
 
-		self.change_x = 0
-		self.change_y = 0
-
-	def jump(self):
-		self.rect.y += 10
-		platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
-		self.rect.y -= 10
-
-		if len(platform_hit_list) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
-			self.change_y = -16
+		self.rect.center = [startx, starty]
 
 	def update(self):
-		self.calc_gravity()
-
-		self.rect.x += self.change_x
-
-		block_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
-		for block in block_hit_list:
-			if self.change_x > 0:
-				self.rect.right = block.rect.left
-			elif self.change_x < 0:
-				self.rect.left = block.rect.right
-
-				# Передвигаемся вверх/вниз
-		self.rect.y += self.change_y
-
-		block_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
-		for block in block_hit_list:
-			if self.change_y > 0:
-				self.rect.bottom = block.rect.top
-			elif self.change_y < 0:
-				self.rect.top = block.rect.bottom
-			self.change_y = 0
-
-	def calc_grav(self):
-		if self.change_y == 0:
-			self.change_y = 1
-		else:
-			self.change_y += .95
-
-		if self.rect.y >= SCREEN_HEIGHT - self.rect.height and self.change_y >= 0:
-			self.change_y = 0
-			self.rect.y = SCREEN_HEIGHT - self.rect.height
-
-	def jump(self):
-		self.rect.y += 10
-		platform_hit_list = pygame.sprite.spritecollide(self, self.level.platform_list, False)
-		self.rect.y -= 10
-
-		if len(platform_hit_list) > 0 or self.rect.bottom >= SCREEN_HEIGHT:
-			self.change_y = -16
-
-	def go_left(self):
-		self.change_x = -9
-		if (self.right):
-			self.flip()
-			self.right = False
-
-	def go_right(self):
-		self.change_x = 9
-		if (not self.right):
-			self.flip()
-			self.right = True
-
-	def stop(self):
-		self.change_x = 0
-
-	def flip(self):
-		self.image = pygame.transform.flip(self.image, True, False)
-
-class Platform(pygame.sprite.Sprite):
-	def __init__(self, width, height):
-		super().__init__()
-		self.image = pygame.image.load('platform.png')
-
-		self.rect = self.image.get_rect()
-
-
-class Level(object):
-	def __init__(self, player):
-		self.platforms = pygame.sprite.Group()
-		self.player = player
-
-		self.background = None
-
-	def update(self):
-		self.platform_list.update()
+		pass
 
 	def draw(self, screen):
-		screen.blit(bg, (0, 0))
+		screen.blit(self.image, self.rect)
 
-		self.platform_list.draw(screen)
+class Player(Sprite):
+	def __init__(self, startx, starty):
+		super().__init__("idle.png", startx, starty)
+		self.stand_image = self.image
 
+		self.speed = 4
+		self.jumpspeed = 20
+		self.vsp = 0
+		self.gravity = 1
+		self.min_jumpspeed = 4
+		self.prev_key = pygame.key.get_pressed()
 
-class Level_01(Level):
-	def __init__(self, player):
-		Level.__init__(self, player)
+	def update(self, boxes):
+		hsp = 0
+		onground = self.check_collision(0, 1, boxes)
+		# check keys
+		key = pygame.key.get_pressed()
+		if key[pygame.K_LEFT]:
+			self.facing_left = True
+			self.walk_animation()
+			hsp = -self.speed
+		elif key[pygame.K_RIGHT]:
+			self.facing_left = False
+			self.walk_animation()
+			hsp = self.speed
+		else:
+			self.image = self.stand_image
 
-		level = [
-			[210, 32, 500, 500],
-			[210, 32, 200, 400],
-			[210, 32, 600, 300],
-		]
+		if key[pygame.K_UP] and onground:
+			self.vsp = -self.jumpspeed
 
-		for platform in level:
-			block = Platform(platform[0], platform[1])
-			block.rect.x = platform[2]
-			block.rect.y = platform[3]
-			block.player = self.player
-			self.platform_list.add(block)
+		# variable height jumping
+		if self.prev_key[pygame.K_UP] and not key[pygame.K_UP]:
+			if self.vsp < -self.min_jumpspeed:
+				self.vsp = -self.min_jumpspeed
 
-clock = pygame.time.Clock()
-run = True
-while(run):
-	clock.tick(60)
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			run = False
+		self.prev_key = key
 
-	keys = pygame.key.get_pressed()
+		# gravity
+		if self.vsp < 10 and not onground:  # 9.8 rounded up
+			self.jump_animation()
+			self.vsp += self.gravity
 
-	if keys[pygame.K_LEFT]:
-		x -= speed
-	elif keys[pygame.K_RIGHT]:
-		x += speed
-	elif keys[pygame.K_UP]:
-		y -= speed
-	elif keys[pygame.K_DOWN]:
-		y += speed
-	win.blit(bg, (0, 0))
-	win.blit(player, (x, y))
-	pygame.display.update()
+		if onground and self.vsp > 0:
+			self.vsp = 0
 
-pygame.quit()
+		# movement
+		self.move(hsp, self.vsp, boxes)
+
+	def move(self, x, y, boxes):
+		dx = x
+		dy = y
+
+		while self.check_collision(0, dy, boxes):
+			dy -= numpy.sign(dy)
+
+		while self.check_collision(dx, dy, boxes):
+			dx -= numpy.sign(dx)
+
+		self.rect.move_ip([dx, dy])
+
+	def check_collision(self, x, y, grounds):
+		self.rect.move_ip([x, y])
+		collide = pygame.sprite.spritecollideany(self, grounds)
+		self.rect.move_ip([-x, -y])
+		return collide
+
+class Box(Sprite):
+	def __init__(self, image, startx, starty):
+		super().__init__("platform.png", startx, starty)
+
+def main():
+	pygame.init()
+	screen = pygame.display.set_mode((WIDTH, HEIGHT))
+	clock = pygame.time.Clock()
+
+	player = Player(100, 200)
+
+	boxes = pygame.sprite.Group()
+	for bx in range(0, 400, 70):
+		boxes.add(Box(bx, 300))
+
+	boxes.add(Box(330, 230))
+	boxes.add(Box(100, 70))
+
+	while True:
+		pygame.event.pump()
+		player.update(boxes)
+
+		# Draw loop
+		screen.fill(BACKGROUND)
+		player.draw(screen)
+		boxes.draw(screen)
+		pygame.display.flip()
+
+		clock.tick(60)
+
+if __name__ == "__main__":
+	main()
