@@ -1,5 +1,8 @@
 import pygame
 import numpy
+import ladder
+import sys
+from pygame.locals import *
 
 WIDTH = 1000
 HEIGHT = 1000
@@ -115,6 +118,12 @@ class Player(Sprite):
 class Box(Sprite):
     def __init__(self, startx, starty):
         super().__init__("boxAlt.png", startx, starty)
+        
+class Ladder(Sprite):
+    def __init__(self, startx, starty):
+        super().__init__("Ladder.png", startx, starty)
+        image = pygame.Surface((60, 300))
+        image.fill(pygame.Color('blue'))
 
 
 def main():
@@ -140,13 +149,28 @@ def main():
     for bx in range(35, 1100, 70):
         boxes.add(Box(bx, 965))
 
-    boxes.add(Box(1000, 600))
-    boxes.add(Box(965, 650))
-    boxes.add(Box(895, 650))
-    boxes.add(Box(825, 650))
-    boxes.add(Box(755, 650))
-    boxes.add(Box(685, 650))
-    boxes.add(Box(615, 650))
+    for bx in range(35, 1100, 70):
+        boxes.add(Box(1035, bx))
+
+    for bx in range(35, 1100, 70):
+        boxes.add(Box(-35, bx))
+
+    for bx in range(-15, 1100, 70):
+        boxes.add(Box(bx, 105))
+
+    boxes.add(Box(965, 175)) # \
+    boxes.add(Box(965, 245)) #  Лестница
+    boxes.add(Box(965, 315)) # /
+    boxes.add(Box(965, 385)) #/
+    boxes.add(Box(965, 650)) #\
+    boxes.add(Box(895, 650)) # \
+    boxes.add(Box(825, 650)) #  \
+    boxes.add(Box(755, 650)) #   Правая нижняя платформа
+    boxes.add(Box(685, 650)) #  /
+    boxes.add(Box(615, 650)) #/
+    boxes.add(Box(895, 385)) #\
+    boxes.add(Box(825, 385)) # Правая верхняя платформа
+    boxes.add(Box(755, 385)) #/
 
 
 
