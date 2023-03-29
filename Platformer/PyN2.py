@@ -60,7 +60,7 @@ class Player(Sprite):
         if self.facing_left:
             self.image = pygame.transform.flip(self.image, True, False)
 
-    def update(self, boxes, gameObjects):
+    def update(self, boxes):
         hsp = 0
         onground = self.check_collision(0, 1, boxes)
         # check keys
@@ -119,7 +119,24 @@ class Player(Sprite):
 class Box(Sprite):
     def __init__(self, startx, starty):
         super().__init__("boxAlt.png", startx, starty)
-        
+
+class RedObject(Sprite):
+    def __init__(self, startx, starty):
+        super().__init__("RedObject.png", startx, starty)
+
+class Deathbox(Sprite):
+    def __init__(self, startx, starty):
+        super().__init__("Deathbox.png", startx, starty)
+
+    def update(self, boxes):
+        self.x += self.dx
+        self.y += self.dy
+        if self.x <= 0 or self.x >= resolution[0]:
+            self.dx *= -1
+        if self.y <= 0 or self.y >= resolution[1]:
+            self.dy *= -1
+
+
 class Ladder(Sprite):
     def __init__(self, startx, starty):
         super().__init__("Ladder.png", startx, starty)
@@ -172,6 +189,8 @@ def main():
     boxes.add(Box(895, 385)) #\
     boxes.add(Box(825, 385)) # Правая верхняя платформа
     boxes.add(Box(755, 385)) #/
+    boxes.add(Deathbox(760, 500))
+    boxes.add(RedObject(500, 900))
 
 
 
@@ -183,6 +202,9 @@ def main():
 
         # Draw loop
         screen.fill(BACKGROUND)
+
+        if Player.rect.colliderect(RedObject.rect):
+            print('collision!')
         player.draw(screen)
         boxes.draw(screen)
         pygame.display.flip()
