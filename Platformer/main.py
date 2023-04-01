@@ -1,17 +1,11 @@
 import pygame
-from pygame.locals import *
 import numpy
-import ladder
-import sys
-pygame.init()
+import random
 
-
-WIDTH = 1000
-HEIGHT = 1000
+WIDTH = 1050
+HEIGHT = 980
 BACKGROUND = (0, 0, 0)
-
-
-
+win = pygame.display.set_mode((WIDTH,HEIGHT))
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self, image, startx, starty):
@@ -35,7 +29,7 @@ class Player(Sprite):
         self.stand_image = self.image
         self.jump_image = pygame.image.load("p1_jump.png")
 
-        self.walk_cycle = [pygame.image.load(f"p1_walk{i:0>2}.png") for i in range(1, 12)]
+        self.walk_cycle = [pygame.image.load(f"anim/p1_walk{i:0>2}.png") for i in range(1,12)]
         self.animation_index = 0
         self.facing_left = False
 
@@ -51,7 +45,7 @@ class Player(Sprite):
         if self.facing_left:
             self.image = pygame.transform.flip(self.image, True, False)
 
-        if self.animation_index < len(self.walk_cycle) - 1:
+        if self.animation_index < len(self.walk_cycle)-1:
             self.animation_index += 1
         else:
             self.animation_index = 0
@@ -66,22 +60,22 @@ class Player(Sprite):
         onground = self.check_collision(0, 1, boxes)
         # check keys
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
+        if key[pygame.K_a]:
             self.facing_left = True
             self.walk_animation()
             hsp = -self.speed
-        elif key[pygame.K_RIGHT]:
+        elif key[pygame.K_d]:
             self.facing_left = False
             self.walk_animation()
             hsp = self.speed
         else:
             self.image = self.stand_image
 
-        if key[pygame.K_UP] and onground:
+        if key[pygame.K_w] and onground:
             self.vsp = -self.jumpspeed
 
         # variable height jumping
-        if self.prev_key[pygame.K_UP] and not key[pygame.K_UP]:
+        if self.prev_key[pygame.K_w] and not key[pygame.K_w]:
             if self.vsp < -self.min_jumpspeed:
                 self.vsp = -self.min_jumpspeed
 
@@ -122,83 +116,30 @@ class Box(Sprite):
         super().__init__("boxAlt.png", startx, starty)
 
 
-
-class RedObject(Sprite):
-    def __init__(self, startx, starty):
-        super().__init__("RedObject.png", startx, starty)
-
-
-class Deathbox(Sprite):
-    def __init__(self, startx, starty):
-        super().__init__("Deathbox.png", startx, starty)
-
-
-    def update(self, boxes):
-        self.x += self.dx
-        self.y += self.dy
-        if self.x <= 0 or self.x >= resolution[0]:
-            self.dx *= -1
-        if self.y <= 0 or self.y >= resolution[1]:
-            self.dy *= -1
-
-
-class Ladder(Sprite):
-    def __init__(self, startx, starty):
-        super().__init__("Ladder.png", startx, starty)
-        image = pygame.Surface((60, 300))
-        image.fill(pygame.Color('blue'))
-
-
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
-    player = Player(950, 880)
+    player = Player(100, 200)
 
     boxes = pygame.sprite.Group()
-    for bx in range(35, 450, 70):
-        boxes.add(Box(bx, 450))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, -35))
-
-    for bx in range(35, 400, 70):
-        boxes.add(Box(bx, 800))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, 1035))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, 965))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(1035, bx))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(-35, bx))
-
-    for bx in range(-15, 1100, 70):
-        boxes.add(Box(bx, 105))
-
-    boxes.add(Box(965, 175)) # \
-    boxes.add(Box(965, 245)) #  Лестница
-    boxes.add(Box(965, 315)) # /
-    boxes.add(Box(965, 385)) #/
-    boxes.add(Box(965, 650)) #\
-    boxes.add(Box(895, 650)) # \
-    boxes.add(Box(825, 650)) #  \
-    boxes.add(Box(755, 650)) #   Правая нижняя платформа
-    boxes.add(Box(685, 650)) #  /
-    boxes.add(Box(615, 650)) #/
-    boxes.add(Box(895, 385)) #\
-    boxes.add(Box(825, 385)) # Правая верхняя платформа
-    boxes.add(Box(755, 385)) #/
-    boxes.add(Deathbox(760, 500))
-    boxes.add(RedObject(500, 900))
-
-
-
+    for bx in range(0, 980, 70):
+        boxes.add(Box(bx, 0))
+    for bx in range(970,1040, 70):
+        boxes.add(Box(bx, 70))
+    for bx in range(970,1040, 70):
+        boxes.add(Box(bx, 140))
+    for bx in range(970,1040, 70):
+        boxes.add(Box(bx, 210))
+    for bx in range(970,1040, 70):
+        boxes.add(Box(bx, 280))
+    for bx in range(970,970, 70):
+        boxes.add(Box(bx, 280))
+    for bx in range(830,970, 70):
+        boxes.add(Box(bx, 280))
+    for bx in range(60, 620, 70):
+        boxes.add(Box(bx, 350))
 
 
     while True:
@@ -212,11 +153,6 @@ def main():
         pygame.display.flip()
 
         clock.tick(60)
-
-
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
 
 
 if __name__ == "__main__":
