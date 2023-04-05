@@ -3,12 +3,17 @@ from pygame.locals import *
 import numpy
 import ladder
 import sys
+import pygame_menu
+import replace
+
 pygame.init()
 
 
 WIDTH = 1000
 HEIGHT = 1000
 BACKGROUND = (0, 0, 0)
+
+win = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
 
@@ -32,6 +37,7 @@ class Sprite(pygame.sprite.Sprite):
 class Player(Sprite):
     def __init__(self, startx, starty):
         super().__init__("p1_front.png", startx, starty)
+        self.Rect = pygame.Rect()
         self.stand_image = self.image
         self.jump_image = pygame.image.load("p1_jump.png")
 
@@ -121,16 +127,22 @@ class Box(Sprite):
     def __init__(self, startx, starty):
         super().__init__("boxAlt.png", startx, starty)
 
+    Box = Rect
+
 
 
 class RedObject(Sprite):
     def __init__(self, startx, starty):
         super().__init__("RedObject.png", startx, starty)
 
+    RedObject = Rect
+
 
 class Deathbox(Sprite):
     def __init__(self, startx, starty):
         super().__init__("Deathbox.png", startx, starty)
+
+    Deathbox = Rect
 
 
     def update(self, boxes):
@@ -153,6 +165,8 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
+
+
 
     player = Player(950, 880)
 
@@ -197,6 +211,10 @@ def main():
     boxes.add(Deathbox(760, 500))
     boxes.add(RedObject(500, 900))
 
+    collide = pygame.Rect.colliderect(Player, RedObject)
+
+    if collide:
+        RedObject.remove()
 
 
 
