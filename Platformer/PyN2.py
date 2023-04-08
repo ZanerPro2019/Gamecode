@@ -37,7 +37,6 @@ class Sprite(pygame.sprite.Sprite):
 class Player(Sprite):
     def __init__(self, startx, starty):
         super().__init__("p1_front.png", startx, starty)
-        self.Rect = pygame.Rect()
         self.stand_image = self.image
         self.jump_image = pygame.image.load("p1_jump.png")
 
@@ -46,10 +45,10 @@ class Player(Sprite):
         self.facing_left = False
 
         self.speed = 4
-        self.jumpspeed = 20
+        self.jumpspeed = 15
         self.vsp = 0
         self.gravity = 1
-        self.min_jumpspeed = 4
+        self.min_jumpspeed = 0
         self.prev_key = pygame.key.get_pressed()
 
     def walk_animation(self):
@@ -69,7 +68,7 @@ class Player(Sprite):
 
     def update(self, boxes):
         hsp = 0
-        onground = self.check_collision(0, 1, boxes)
+        ground = self.check_collision(0, 1, boxes)
         # check keys
         key = pygame.key.get_pressed()
         if key[pygame.K_LEFT]:
@@ -83,7 +82,7 @@ class Player(Sprite):
         else:
             self.image = self.stand_image
 
-        if key[pygame.K_UP] and onground:
+        if key[pygame.K_UP] and ground:
             self.vsp = -self.jumpspeed
 
         # variable height jumping
@@ -94,11 +93,11 @@ class Player(Sprite):
         self.prev_key = key
 
         # gravity
-        if self.vsp < 10 and not onground:  # 9.8 rounded up
+        if self.vsp < 10 and not ground:  # 9.8 rounded up
             self.jump_animation()
             self.vsp += self.gravity
 
-        if onground and self.vsp > 0:
+        if ground and self.vsp > 0:
             self.vsp = 0
 
         # movement
@@ -122,36 +121,17 @@ class Player(Sprite):
         self.rect.move_ip([-x, -y])
         return collide
 
-
 class Box(Sprite):
     def __init__(self, startx, starty):
         super().__init__("boxAlt.png", startx, starty)
-
-    Box = Rect
-
-
 
 class RedObject(Sprite):
     def __init__(self, startx, starty):
         super().__init__("RedObject.png", startx, starty)
 
-    RedObject = Rect
-
-
 class Deathbox(Sprite):
     def __init__(self, startx, starty):
         super().__init__("Deathbox.png", startx, starty)
-
-    Deathbox = Rect
-
-
-    def update(self, boxes):
-        self.x += self.dx
-        self.y += self.dy
-        if self.x <= 0 or self.x >= resolution[0]:
-            self.dx *= -1
-        if self.y <= 0 or self.y >= resolution[1]:
-            self.dy *= -1
 
 
 class Ladder(Sprite):
@@ -211,10 +191,9 @@ def main():
     boxes.add(Deathbox(760, 500))
     boxes.add(RedObject(500, 900))
 
-    collide = pygame.Rect.colliderect(Player, RedObject)
 
-    if collide:
-        RedObject.remove()
+
+
 
 
 
