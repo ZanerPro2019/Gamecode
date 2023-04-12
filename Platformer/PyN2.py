@@ -1,10 +1,9 @@
 import pygame
 from pygame.locals import *
 import numpy
-import ladder
 import sys
 import pygame_menu
-import replace
+import random
 
 pygame.init()
 
@@ -109,6 +108,7 @@ class Player(Sprite):
 
         while self.check_collision(0, dy, boxes):
             dy -= numpy.sign(dy)
+            boxes.group
 
         while self.check_collision(dx, dy, boxes):
             dx -= numpy.sign(dx)
@@ -122,8 +122,11 @@ class Player(Sprite):
         return collide
 
 class Box(Sprite):
-    def __init__(self, startx, starty):
+    def __init__(self, startx, starty, group='cub', action=False):
         super().__init__("boxAlt.png", startx, starty)
+
+    def get_group(self):
+        return self.group
 
 class RedObject(Sprite):
     def __init__(self, startx, starty):
@@ -152,28 +155,28 @@ def main():
 
     boxes = pygame.sprite.Group()
     for bx in range(35, 450, 70):
-        boxes.add(Box(bx, 450))
+        boxes.add(Box(bx, 450, group='cub'))
 
     for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, -35))
+        boxes.add(Box(bx, -35, group='cub'))
 
     for bx in range(35, 400, 70):
-        boxes.add(Box(bx, 800))
+        boxes.add(Box(bx, 800, group='cub'))
 
     for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, 1035))
+        boxes.add(Box(bx, 1035, group='cub'))
 
     for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, 965))
+        boxes.add(Box(bx, 965, group='cub'))
 
     for bx in range(35, 1100, 70):
-        boxes.add(Box(1035, bx))
+        boxes.add(Box(1035, bx, group='cub'))
 
     for bx in range(35, 1100, 70):
-        boxes.add(Box(-35, bx))
+        boxes.add(Box(-35, bx, group='cub'))
 
     for bx in range(-15, 1100, 70):
-        boxes.add(Box(bx, 105))
+        boxes.add(Box(bx, 105, group='cub'))
 
     boxes.add(Box(965, 175)) # \
     boxes.add(Box(965, 245)) #  Лестница
