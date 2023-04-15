@@ -1,20 +1,13 @@
 import pygame
-from pygame.locals import *
-import pygame as pg
 import numpy
-import sys
-import pygame_menu
 import random
+import time
 
-pygame.init()
 
-
-WIDTH = 1000
-HEIGHT = 1000
+WIDTH = 1090
+HEIGHT = 1080
 BACKGROUND = (0, 0, 0)
-
 win = pygame.display.set_mode((WIDTH, HEIGHT))
-
 
 
 
@@ -40,15 +33,15 @@ class Player(Sprite):
         self.stand_image = self.image
         self.jump_image = pygame.image.load("p1_jump.png")
 
-        self.walk_cycle = [pygame.image.load(f"p1_walk{i:0>2}.png") for i in range(1, 12)]
+        self.walk_cycle = [pygame.image.load(f"anim/p1_walk{i:0>2}.png") for i in range(1, 12)]
         self.animation_index = 0
         self.facing_left = False
 
         self.speed = 4
-        self.jumpspeed = 30
+        self.jumpspeed = 20
         self.vsp = 0
         self.gravity = 1
-        self.min_jumpspeed = 0
+        self.min_jumpspeed = 4
         self.prev_key = pygame.key.get_pressed()
 
     def walk_animation(self):
@@ -68,36 +61,37 @@ class Player(Sprite):
 
     def update(self, boxes):
         hsp = 0
-        ground = self.check_collision(0, 1, boxes)
+        onground = self.check_collision(0, 1, boxes)
         # check keys
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
+
+        if key[pygame.K_a]:
             self.facing_left = True
             self.walk_animation()
             hsp = -self.speed
-        elif key[pygame.K_RIGHT]:
+        elif key[pygame.K_d]:
             self.facing_left = False
             self.walk_animation()
             hsp = self.speed
         else:
             self.image = self.stand_image
 
-        if key[pygame.K_UP] and ground:
+        if key[pygame.K_w] and onground:
             self.vsp = -self.jumpspeed
 
         # variable height jumping
-        if self.prev_key[pygame.K_UP] and not key[pygame.K_UP]:
+        if self.prev_key[pygame.K_w] and not key[pygame.K_w]:
             if self.vsp < -self.min_jumpspeed:
                 self.vsp = -self.min_jumpspeed
 
         self.prev_key = key
 
         # gravity
-        if self.vsp < 10 and not ground:  # 9.8 rounded up
+        if self.vsp < 10 and not onground:  # 9.8 rounded up
             self.jump_animation()
             self.vsp += self.gravity
 
-        if ground and self.vsp > 0:
+        if onground and self.vsp > 0:
             self.vsp = 0
 
         # movement
@@ -121,27 +115,17 @@ class Player(Sprite):
         self.rect.move_ip([-x, -y])
         return collide
 
+
 class Box(Sprite):
-    def __init__(self, startx, starty, group='cub', action=False):
+    def __init__(self, startx, starty):
         super().__init__("boxAlt.png", startx, starty)
 
-    def get_group(self):
-        return self.group
-
-class Teleport(Sprite):
-    def __init__(self, startx, starty):
-        super().__init__("RedObject.png", startx, starty)
 
 class Lava(Sprite):
     def __init__(self, startx, starty):
-        super().__init__("Deathbox.png", startx, starty)
+        super().__init__("LavaAlt (2).png", startx, starty, )
 
 
-class Ladder(Sprite):
-    def __init__(self, startx, starty):
-        super().__init__("Ladder.png", startx, starty)
-        image = pygame.Surface((60, 300))
-        image.fill(pygame.Color('blue'))
 
 
 def main():
@@ -149,85 +133,79 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
-
-
-    player = Player(950, 880)
+    player = Player(100, 200)
 
     boxes = pygame.sprite.Group()
-    for bx in range(35, 450, 70):
-        boxes.add(Box(bx, 450))
+    for bx in range(630, 1100, 70):
+        boxes.add(Box(bx, 1000))
+    for bx in range(0, 90, 70):
+        boxes.add(Box(bx, 1000))
+    for bx in range(210, 400, 70):
+        boxes.add(Box(bx, 1000))
+    for bx in range(0, 980, 70):
+        boxes.add(Box(bx, 790))
+    for bx in range(420, 600, 70):
+        boxes.add(Box(bx, 720))
+    for bx in range(840, 1100, 70):
+        boxes.add(Box(bx, 720))
+    for bx in range(0, 560, 70):
+        boxes.add(Box(bx, 550))
+    for bx in range(0, 80, 70):
+        boxes.add(Box(bx, 340))
+    for bx in range(310, 1150, 70):
+        boxes.add(Box(bx, 290))
+    for bx in range(1050, 1120, 70):
+        boxes.add(Box(bx, 220))
+    for bx in range(1050, 1120, 70):
+        boxes.add(Box(bx, 150))
+    for bx in range(0, 1120, 70):
+        boxes.add(Box(bx, 80))
+    for bx in range(69, 70, 70):
+        boxes.add(Box(bx, 480))
 
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, -35))
+     # лава
+    # lavas = pygame.sprite.Group()
+    # for bx in range(140, 190, 70):
+    #     lavas.add(Lava(bx, 1000))
+    # for bx in range(420, 600, 70):
+    #     lavas.add(Lava(bx, 1000))
+    # for bx in range(630, 800, 70):
+    #     lavas.add(Lava(bx, 725))
+    # for bx in range(139, 140, 70):
+    #     lavas.add(Lava(bx, 415))
 
-    for bx in range(35, 400, 70):
-        boxes.add(Box(bx, 800))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, 1035))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, 965))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(1035, bx))
-
-    for bx in range(35, 1100, 70):
-        boxes.add(Box(-35, bx))
-
-    for bx in range(-15, 1100, 70):
-        boxes.add(Box(bx, 105))
-
-    boxes.add(Box(965, 175)) # \
-    boxes.add(Box(965, 245)) #  Лестница
-    boxes.add(Box(965, 315)) # /
-    boxes.add(Box(965, 385)) #/
-    boxes.add(Box(965, 650)) #\
-    boxes.add(Box(895, 650)) # \
-    boxes.add(Box(825, 650)) #  \
-    boxes.add(Box(755, 650)) #   Правая нижняя платформа
-    boxes.add(Box(685, 650)) #  /
-    boxes.add(Box(615, 650)) #/
-    boxes.add(Box(895, 385)) #\
-    boxes.add(Box(825, 385)) # Правая верхняя платформа
-    boxes.add(Box(755, 385)) #/
-
-    # тест ЛАВАшки
+    #тест ЛАВАшки
     lava = Lava(140, 415)
-    teleport = Teleport(500, 900)
 
-
-
-
-
-
-
+    # лестница
+    for bx in range(280, 350, 70):
+        boxes.add(Box(bx, 930))
+    for bx in range(280, 350, 70):
+        boxes.add(Box(bx, 860))
+    for bx in range(139, 140, 70):
+        boxes.add(Box(bx, 480))
+    for bx in range(69, 70, 70):
+        boxes.add(Box(bx, 410))
 
     while True:
         pygame.event.pump()
         player.update(boxes)
 
+
+
         # Draw loop
         screen.fill(BACKGROUND)
         player.draw(screen)
         boxes.draw(screen)
+
         lava.draw(screen)
-        teleport.draw(screen)
 
         if pygame.sprite.collide_rect(player, lava):
             player.move(0, -250, boxes)
 
-        if pygame.sprite.collide_rect(player, teleport):
-            teleport
-            boxes.add(Box(500, 500))
         pygame.display.flip()
 
         clock.tick(60)
-
-
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
 
 
 if __name__ == "__main__":
