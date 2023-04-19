@@ -5,14 +5,14 @@ import numpy
 import sys
 import pygame_menu
 import random
-
+kill = 0
 pygame.init()
 
 
 WIDTH = 1000
 HEIGHT = 1000
 BACKGROUND = (0, 0, 0)
-
+bg = pygame.image.load("background.jpg")
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
@@ -45,10 +45,10 @@ class Player(Sprite):
         self.facing_left = False
 
         self.speed = 4
-        self.jumpspeed = 30
+        self.jumpspeed = 20
         self.vsp = 0
         self.gravity = 1
-        self.min_jumpspeed = 0
+        self.min_jumpspeed = 4
         self.prev_key = pygame.key.get_pressed()
 
     def walk_animation(self):
@@ -132,6 +132,14 @@ class Teleport(Sprite):
     def __init__(self, startx, starty):
         super().__init__("RedObject.png", startx, starty)
 
+class UsefulTeleport(Sprite):
+    def __init__(self, startx, starty):
+        super().__init__("green.png", startx, starty)
+
+class PlayerTeleport(Sprite):
+    def __init__(self, startx, starty):
+        super().__init__("Purple.png", startx, starty)
+
 class Lava(Sprite):
     def __init__(self, startx, starty):
         super().__init__("Deathbox.png", startx, starty)
@@ -154,11 +162,10 @@ def main():
     player = Player(950, 880)
 
     boxes = pygame.sprite.Group()
-    for bx in range(35, 450, 70):
-        boxes.add(Box(bx, 450))
+
 
     for bx in range(35, 1100, 70):
-        boxes.add(Box(bx, -35))
+        boxes.add(Box(bx, -105))
 
     for bx in range(35, 400, 70):
         boxes.add(Box(bx, 800))
@@ -191,10 +198,19 @@ def main():
     boxes.add(Box(895, 385)) #\
     boxes.add(Box(825, 385)) # Правая верхняя платформа
     boxes.add(Box(755, 385)) #/
+    boxes.add(Box(35, 450))
+    boxes.add(Box(315, 450))
+    boxes.add(Box(385, 450))
 
     # тест ЛАВАшки
-    lava = Lava(140, 415)
-    teleport = Teleport(500, 900)
+    lava = Lava(105, 450)
+    lava1 = Lava(175, 450)
+    lava2 = Lava(245, 450)
+    lava3 = Lava(405, 105)
+    lava4 = Lava(405, 104)
+    teleport = Teleport(450, 900)
+    playerteleport = PlayerTeleport(870, 300)
+    usefulteleport = UsefulTeleport(950, 590)
 
 
 
@@ -208,18 +224,41 @@ def main():
         player.update(boxes)
 
         # Draw loop
-        screen.fill(BACKGROUND)
+        screen.blit(bg, (0, 0))
         player.draw(screen)
         boxes.draw(screen)
         lava.draw(screen)
+        lava1.draw(screen)
+        lava2.draw(screen)
+        lava3.draw(screen)
+        lava4.draw(screen)
         teleport.draw(screen)
+        usefulteleport.draw(screen)
+        playerteleport.draw(screen)
+
+        if pygame.sprite.collide_rect(player, usefulteleport):
+            while player.move(), list(len(0, 10000))):
+                boxes.add(Box(470, 500))
+                usefulteleport = UsefulTeleport(10000, 10000)
+
+        if pygame.sprite.collide_rect(player, lava4):
+            player.move(500, 500, boxes)
+
+        if pygame.sprite.collide_rect(player, playerteleport):
+            player.move(0, -380, boxes)
 
         if pygame.sprite.collide_rect(player, lava):
-            player.move(0, -250, boxes)
+            player.move(800, 550, boxes)
+
+        if pygame.sprite.collide_rect(player, lava1):
+            player.move(800, 550, boxes)
+
+        if pygame.sprite.collide_rect(player, lava2):
+            player.move(800, 550, boxes)
 
         if pygame.sprite.collide_rect(player, teleport):
-            teleport
             boxes.add(Box(500, 500))
+            teleport = Teleport(10000, 10000)
         pygame.display.flip()
 
         clock.tick(60)
