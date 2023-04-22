@@ -1,3 +1,4 @@
+import keyboard
 import pygame
 from pygame.locals import *
 import pygame as pg
@@ -144,6 +145,10 @@ class Lava(Sprite):
     def __init__(self, startx, starty):
         super().__init__("Deathbox.png", startx, starty)
 
+class invTeleport(Sprite):
+    def __init__(self, startx, starty):
+        super().__init__("boxAlt.png", startx, starty)
+
 
 class Ladder(Sprite):
     def __init__(self, startx, starty):
@@ -189,7 +194,7 @@ def main():
     boxes.add(Box(965, 245)) #  Лестница
     boxes.add(Box(965, 315)) # /
     boxes.add(Box(965, 385)) #/
-    boxes.add(Box(965, 650)) #\
+    boxes.add(Box(965, 650)) #\\
     boxes.add(Box(895, 650)) # \
     boxes.add(Box(825, 650)) #  \
     boxes.add(Box(755, 650)) #   Правая нижняя платформа
@@ -208,9 +213,16 @@ def main():
     lava2 = Lava(245, 450)
     lava3 = Lava(405, 105)
     lava4 = Lava(405, 104)
+    lava5 = Lava(175, 965)
+    lava6 = Lava(825, 650)
+    lava7 = Lava(175, 964)
+    lava8 = Lava(825, 651)
     teleport = Teleport(450, 900)
     playerteleport = PlayerTeleport(870, 300)
     usefulteleport = UsefulTeleport(950, 590)
+    usefulteleport1 = UsefulTeleport(10000, 10000)
+    invteleport = invTeleport(10000, 10000)
+    invteleport1 = invTeleport(10000, 10000)
 
 
 
@@ -232,33 +244,71 @@ def main():
         lava2.draw(screen)
         lava3.draw(screen)
         lava4.draw(screen)
+        lava5.draw(screen)
+        lava6.draw(screen)
+        lava7.draw(screen)
+        lava8.draw(screen)
         teleport.draw(screen)
         usefulteleport.draw(screen)
+
         playerteleport.draw(screen)
 
         if pygame.sprite.collide_rect(player, usefulteleport):
-            while player.move(), list(len(0, 10000))):
-                boxes.add(Box(470, 500))
-                usefulteleport = UsefulTeleport(10000, 10000)
+            boxes.add(Box(500, 500))
+            usefulteleport = UsefulTeleport(10000, 10000)
+            usefulteleport1 = UsefulTeleport(485, 735)
+            usefulteleport1.draw(screen)
+            invteleport.draw(screen)
+            invteleport1.draw(screen)
+            invteleport = invTeleport(-34, 380)
+            invteleport1 = invTeleport(-34, 735)
+
+        usefulteleport1.draw(screen)
+        invteleport.draw(screen)
+        invteleport1.draw(screen)
+
+        if pygame.sprite.collide_rect(player, usefulteleport1):
+            boxes.add(Box(600, 400))
+            usefulteleport1 = UsefulTeleport(10000, 10000)
+
+        if pygame.sprite.collide_rect(player, invteleport):
+            player.move(100, 400, boxes)
+
+        if pygame.sprite.collide_rect(player, invteleport1):
+            player.move(100, -600, boxes)
+
+        if pygame.sprite.collide_rect(player, lava7):
+            main()
+
+        if pygame.sprite.collide_rect(player, lava8):
+            main()
+
+
+        if pygame.sprite.collide_rect(player, lava6):
+            main()
 
         if pygame.sprite.collide_rect(player, lava4):
-            player.move(500, 500, boxes)
+            main()
 
         if pygame.sprite.collide_rect(player, playerteleport):
             player.move(0, -380, boxes)
 
         if pygame.sprite.collide_rect(player, lava):
-            player.move(800, 550, boxes)
+            main()
 
         if pygame.sprite.collide_rect(player, lava1):
-            player.move(800, 550, boxes)
+            main()
 
         if pygame.sprite.collide_rect(player, lava2):
-            player.move(800, 550, boxes)
+            main()
+
+        if pygame.sprite.collide_rect(player, lava5):
+            main()
 
         if pygame.sprite.collide_rect(player, teleport):
             boxes.add(Box(500, 500))
             teleport = Teleport(10000, 10000)
+
         pygame.display.flip()
 
         clock.tick(60)
