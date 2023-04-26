@@ -6,15 +6,17 @@ import numpy
 import sys
 import pygame_menu
 import random
-kill = 0
+import time
+c = 0
 pygame.init()
 
 
-WIDTH = 1000
-HEIGHT = 1000
+WIDTH = 1090
+HEIGHT = 1020
 BACKGROUND = (0, 0, 0)
 bg = pygame.image.load("background.jpg")
 win = pygame.display.set_mode((WIDTH, HEIGHT))
+
 
 
 
@@ -149,18 +151,17 @@ class invTeleport(Sprite):
     def __init__(self, startx, starty):
         super().__init__("boxAlt.png", startx, starty)
 
-
-class Ladder(Sprite):
+class Finish(Sprite):
     def __init__(self, startx, starty):
-        super().__init__("Ladder.png", startx, starty)
-        image = pygame.Surface((60, 300))
-        image.fill(pygame.Color('blue'))
+        super().__init__("Finish.png", startx, starty)
 
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
+
+
 
 
 
@@ -182,56 +183,63 @@ def main():
         boxes.add(Box(bx, 965))
 
     for bx in range(35, 1100, 70):
-        boxes.add(Box(1035, bx))
+        boxes.add(Box(1150, bx))
 
     for bx in range(35, 1100, 70):
         boxes.add(Box(-35, bx))
 
-    for bx in range(-15, 1100, 70):
-        boxes.add(Box(bx, 105))
 
     boxes.add(Box(965, 175)) # \
     boxes.add(Box(965, 245)) #  Лестница
     boxes.add(Box(965, 315)) # /
     boxes.add(Box(965, 385)) #/
-    boxes.add(Box(965, 650)) #\\
-    boxes.add(Box(895, 650)) # \
-    boxes.add(Box(825, 650)) #  \
-    boxes.add(Box(755, 650)) #   Правая нижняя платформа
-    boxes.add(Box(685, 650)) #  /
-    boxes.add(Box(615, 650)) #/
-    boxes.add(Box(895, 385)) #\
-    boxes.add(Box(825, 385)) # Правая верхняя платформа
-    boxes.add(Box(755, 385)) #/
+    boxes.add(Box(1055, 650)) #\\
+    boxes.add(Box(985, 650)) # \
+    boxes.add(Box(915, 650)) #  \
+    boxes.add(Box(845, 650)) #   Правая нижняя платформа
+    boxes.add(Box(775, 650)) #  /
+    boxes.add(Box(705, 650)) #/
+    boxes.add(Box(1055, 385)) #\
+    boxes.add(Box(985, 385)) # Правая верхняя платформа
+    boxes.add(Box(905, 385)) #/
     boxes.add(Box(35, 450))
     boxes.add(Box(315, 450))
     boxes.add(Box(385, 450))
+    boxes.add(Box(335, 105))
+    boxes.add(Box(265, 105))
+    boxes.add(Box(195, 105))
+    boxes.add(Box(125, 105))
+    boxes.add(Box(55, 105))
+    boxes.add(Box(-15, 105))
+    boxes.add(Box(475, 105))
+    boxes.add(Box(545, 105))
+    boxes.add(Box(615, 105))
+    boxes.add(Box(685, 105))
+    boxes.add(Box(755, 105))
+    boxes.add(Box(825, 105))
+    boxes.add(Box(895, 105))
+    boxes.add(Box(965, 105))
 
     # тест ЛАВАшки
     lava = Lava(105, 450)
     lava1 = Lava(175, 450)
     lava2 = Lava(245, 450)
     lava3 = Lava(405, 105)
-    lava4 = Lava(405, 104)
     lava5 = Lava(175, 965)
-    lava6 = Lava(825, 650)
+    lava6 = Lava(845, 650)
     lava7 = Lava(175, 964)
-    lava8 = Lava(825, 651)
+    lava8 = Lava(845, 651)
     teleport = Teleport(450, 900)
+    finish = Finish(55, 62)
     playerteleport = PlayerTeleport(870, 300)
     usefulteleport = UsefulTeleport(950, 590)
     usefulteleport1 = UsefulTeleport(10000, 10000)
     invteleport = invTeleport(10000, 10000)
     invteleport1 = invTeleport(10000, 10000)
 
+    global c
+    while True and c != 3:
 
-
-
-
-
-
-
-    while True:
         pygame.event.pump()
         player.update(boxes)
 
@@ -243,13 +251,13 @@ def main():
         lava1.draw(screen)
         lava2.draw(screen)
         lava3.draw(screen)
-        lava4.draw(screen)
         lava5.draw(screen)
         lava6.draw(screen)
         lava7.draw(screen)
         lava8.draw(screen)
         teleport.draw(screen)
         usefulteleport.draw(screen)
+        finish.draw(screen)
 
         playerteleport.draw(screen)
 
@@ -278,32 +286,42 @@ def main():
             player.move(100, -600, boxes)
 
         if pygame.sprite.collide_rect(player, lava7):
-            main()
+            player = Player(950, 880)
+            c = c+1
+
+        if pygame.sprite.collide_rect(player, finish):
+            pygame.quit()
 
         if pygame.sprite.collide_rect(player, lava8):
-            main()
+            player = Player(950, 880)
+            c = c + 1
 
+        if pygame.sprite.collide_rect(player, lava3):
+            player = Player(950, 880)
+            c = c + 1
 
         if pygame.sprite.collide_rect(player, lava6):
-            main()
-
-        if pygame.sprite.collide_rect(player, lava4):
-            main()
+            player = Player(950, 880)
+            c = c + 1
 
         if pygame.sprite.collide_rect(player, playerteleport):
             player.move(0, -380, boxes)
 
         if pygame.sprite.collide_rect(player, lava):
-            main()
+            player = Player(950, 880)
+            c = c + 1
 
         if pygame.sprite.collide_rect(player, lava1):
-            main()
+            player = Player(950, 880)
+            c = c + 1
 
         if pygame.sprite.collide_rect(player, lava2):
-            main()
+            player = Player(950, 880)
+            c = c + 1
 
         if pygame.sprite.collide_rect(player, lava5):
-            main()
+            player = Player(950, 880)
+            c = c + 1
 
         if pygame.sprite.collide_rect(player, teleport):
             boxes.add(Box(500, 500))
