@@ -1,3 +1,4 @@
+from subprocess import call
 import keyboard
 import pygame
 from pygame.locals import *
@@ -288,7 +289,11 @@ def main():
             c = c + 1
 
         if pygame.sprite.collide_rect(player, finish):
+            finish = Finish(10000, 10000)
+            call(["python", "maincopy.py"])
             pygame.quit()
+
+
 
         if pygame.sprite.collide_rect(player, lava3):
             player = Player(950, 880)
