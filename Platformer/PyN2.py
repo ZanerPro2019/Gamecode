@@ -9,6 +9,7 @@ import pygame_menu
 import random
 import time
 
+
 c = 0
 pygame.init()
 
@@ -17,6 +18,8 @@ HEIGHT = 1020
 BACKGROUND = (0, 0, 0)
 bg = pygame.image.load("background.jpg")
 win = pygame.display.set_mode((WIDTH, HEIGHT))
+
+
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -143,7 +146,7 @@ class UsefulTeleport(Sprite):
 
 class PlayerTeleport(Sprite):
     def __init__(self, startx, starty):
-        super().__init__("Purple.png", startx, starty)
+        super().__init__("purple.png", startx, starty)
 
 
 class Lava(Sprite):
@@ -153,7 +156,7 @@ class Lava(Sprite):
 
 class invTeleport(Sprite):
     def __init__(self, startx, starty):
-        super().__init__("boxAlt.png", startx, starty)
+        super().__init__("purple.png", startx, starty)
 
 
 class Finish(Sprite):
@@ -266,8 +269,8 @@ def main():
             usefulteleport1.draw(screen)
             invteleport.draw(screen)
             invteleport1.draw(screen)
-            invteleport = invTeleport(-34, 380)
-            invteleport1 = invTeleport(-34, 735)
+            invteleport = invTeleport(35, 380)
+            invteleport1 = invTeleport(35, 735)
             teleport = Teleport(10000, 10000)
 
         usefulteleport1.draw(screen)
@@ -291,7 +294,7 @@ def main():
         if pygame.sprite.collide_rect(player, finish):
             finish = Finish(10000, 10000)
             call(["python", "maincopy.py"])
-            pygame.quit()
+            PyN2.quit()
 
 
 
