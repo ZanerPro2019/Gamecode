@@ -1,12 +1,15 @@
-import os
-
+from subprocess import call
 import keyboard
 import pygame
-import pygame_menu
+from pygame.locals import *
+import pygame as pg
 import numpy
-import random
 import sys
+import pygame_menu
+import random
 import time
+import os
+
 pygame.init()
 kill = 0
 level = 1
@@ -109,6 +112,8 @@ class Player(Sprite):
         # movement
         self.move(hsp, self.vsp, boxes)
 
+
+
     def move(self, x, y, boxes):
         dx = x
         dy = y
@@ -135,11 +140,11 @@ class Box(Sprite):
 
 class Lava(Sprite):
     def __init__(self, startx, starty):
-        super().__init__("LavaAlt.png", startx, starty, )
+        super().__init__("Deathbox.png", startx, starty, )
 
 class Ball(Sprite):
     def __init__(self, startx, starty):
-        super().__init__("violent_ball.png", startx, starty, )
+        super().__init__("purple.png", startx, starty, )
 
 class Platforma(Sprite):
     def __init__(self, startx, starty):
@@ -191,18 +196,20 @@ def main():
     for bx in range(69, 70, 70):
         boxes.add(Box(bx, 410))
 
-    lava = Lava(140, 415)
-    lava1 = Lava(631, 720)
+    lava = Lava(139, 415)
+    lava1 = Lava(630, 720)
     lava2 = Lava(700, 720)
     lava3 = Lava(770, 720)
-    lava4 = Lava(421, 1000)
-    lava5 = Lava(491, 1000)
-    lava6 = Lava(561, 1000)
+    lava4 = Lava(420, 1000)
+    lava5 = Lava(490, 1000)
+    lava6 = Lava(560, 1000)
     lava7 = Lava(140, 1000)
 
     ball = Ball(1050, 680)
     ball1 = Ball(100, 950)
     checkpoint = Platforma(1049, 955)
+
+
 
 
     global kill
@@ -223,12 +230,16 @@ def main():
             if pygame.sprite.collide_rect(player, ball1):
                 player.move(800, 100, boxes)
             if pygame.sprite.collide_rect(player, checkpoint):
+                
                 player.move(0, 0, boxes)
                 level += 1
                 print('lvl done', level)
                 checkpoint.image = pygame.image.load('teleport_pushed.png')
             else:
                 checkpoint.image = pygame.image.load('teleport.png')
+
+
+
             
                 
             pygame.event.pump()
@@ -252,6 +263,11 @@ def main():
             pygame.display.flip()
 
             clock.tick(60)
+
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+
         elif kill == 3:
             kill = 0
             menu = pygame_menu.Menu('You died', WIDTH, HEIGHT,
@@ -267,13 +283,6 @@ def main():
 
 
 if __name__ == "__main__":
-    menu = pygame_menu.Menu('Welcome', WIDTH, HEIGHT,
-                       theme=pygame_menu.themes.THEME_BLUE)
-    
-    menu.add.button('Play', main)
-    menu.add.button('Help', help_g)
-    menu.add.button('Quit', pygame_menu.events.EXIT)
-
-    menu.mainloop(win)
+    main()
 
 # https://ru.stackoverflow.com/questions/1514430/Оптимизация-циклов

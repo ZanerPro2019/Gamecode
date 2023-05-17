@@ -8,6 +8,7 @@ import sys
 import pygame_menu
 import random
 import time
+import os
 
 
 c = 0
@@ -75,22 +76,22 @@ class Player(Sprite):
         ground = self.check_collision(0, 1, boxes)
         # check keys
         key = pygame.key.get_pressed()
-        if key[pygame.K_LEFT]:
+        if key[pygame.K_a]:
             self.facing_left = True
             self.walk_animation()
             hsp = -self.speed
-        elif key[pygame.K_RIGHT]:
+        elif key[pygame.K_d]:
             self.facing_left = False
             self.walk_animation()
             hsp = self.speed
         else:
             self.image = self.stand_image
 
-        if key[pygame.K_UP] and ground:
+        if key[pygame.K_w] and ground:
             self.vsp = -self.jumpspeed
 
         # variable height jumping
-        if self.prev_key[pygame.K_UP] and not key[pygame.K_UP]:
+        if self.prev_key[pygame.K_w] and not key[pygame.K_w]:
             if self.vsp < -self.min_jumpspeed:
                 self.vsp = -self.min_jumpspeed
 
@@ -106,6 +107,10 @@ class Player(Sprite):
 
         # movement
         self.move(hsp, self.vsp, boxes)
+
+        if key[pygame.K_r]:
+            pygame.quit()
+            call(["python", "PyN2.py"])
 
     def move(self, x, y, boxes):
         dx = x
@@ -162,6 +167,9 @@ class invTeleport(Sprite):
 class Finish(Sprite):
     def __init__(self, startx, starty):
         super().__init__("Finish.png", startx, starty)
+
+def help_g():
+    help_f = os.system('help.txt')
 
 
 def main():
@@ -293,8 +301,9 @@ def main():
 
         if pygame.sprite.collide_rect(player, finish):
             finish = Finish(10000, 10000)
+            pygame.quit()
             call(["python", "maincopy.py"])
-            PyN2.quit()
+
 
 
 
@@ -340,5 +349,23 @@ def main():
                 pygame.quit()
 
 
+    if c == 3:
+        c = 0
+        menu = pygame_menu.Menu('You died', WIDTH, HEIGHT,
+                                theme=pygame_menu.themes.THEME_BLUE)
+
+        menu.add.button('Play again', main)
+        menu.add.button('Help', help_g)
+        menu.add.button('Quit', pygame_menu.events.EXIT)
+
+        menu.mainloop(win)
+
 if __name__ == "__main__":
-    main()
+    menu = pygame_menu.Menu('Welcome', WIDTH, HEIGHT,
+                            theme=pygame_menu.themes.THEME_BLUE)
+
+    menu.add.button('Play', main)
+    menu.add.button('Help', help_g)
+    menu.add.button('Quit', pygame_menu.events.EXIT)
+
+    menu.mainloop(win)
